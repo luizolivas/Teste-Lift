@@ -36,16 +36,25 @@ export default class ListaPedido extends React.Component {
 
         if (itensPedido.length) {
           await Promise.all(itensPedido.map(async (item) => {
-            produtos.push(await this.findProduto(item.produto))
+            let produto = await this.findProduto(item.produto)
+            produto.valorCompra = item.quantidade * produto.valor
+
+            produtos.push(produto)
           }))
 
         }
-        //precisa calcular valor
+        let sum = 0;
+        for (let i = 0; i < produtos.length; i++) {
+          sum += produtos[i].valorCompra;
+        }
 
-        pedido = { "id": pedido.id, clienteNome: cliente.nome, "data": pedido.data, valor: 10 }
+        console.log(sum);
+
+        pedido = { "id": pedido.id, clienteNome: cliente.nome, "data": pedido.data, valor: sum }
         this.setState({ pedidos: [...this.state.pedidos, pedido] });
       }
     }))
+
 
   }
 
@@ -83,6 +92,7 @@ export default class ListaPedido extends React.Component {
       }
     };
 
+
     const response = await fetch("https://sistemalift1.com/lift_ps/api/Produtos/" + idPedido, requestOptions);
     const pedidos = await response.json();
     return pedidos
@@ -93,7 +103,6 @@ export default class ListaPedido extends React.Component {
   };
 
   render() {
-    //recupera do estado
     const { pedidos } = this.state
     return (
 
