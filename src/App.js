@@ -7,7 +7,10 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 // var requestOptions = {
 //   method: 'GET',
 //   redirect: 'follow'
+
 // };
+
+
 
 export default function App() {
   return (

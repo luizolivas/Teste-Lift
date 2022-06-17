@@ -5,7 +5,7 @@ import {
 import React from "react";
 import "./styles.css";
 
-export default class ListaPedido extends React.Component {
+export default class InfoPedido extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -26,9 +26,9 @@ export default class ListaPedido extends React.Component {
     };
 
     const response = await fetch("https://sistemalift1.com/lift_ps/api/pedidos", requestOptions);
-    let pedidosResponse = await response.json();
+    const pedidos = await response.json();
     //percorre lista e salva novos atributos
-    await Promise.all(pedidosResponse.map(async (pedido) => {
+    await Promise.all(pedidos.map(async (pedido) => {
       if (pedido) {
         let itensPedido = await this.findItemPedido(pedido.id)
         let cliente = await this.findCliente(pedido.cliente)
@@ -36,16 +36,21 @@ export default class ListaPedido extends React.Component {
 
         if (itensPedido.length) {
           await Promise.all(itensPedido.map(async (item) => {
-            produtos.push(await this.findProduto(item.produto))
+            produtos.add(await this.findProduto(item.produto))
           }))
 
         }
-        //precisa calcular valor
+        console.log(itensPedido, cliente, produtos)
+        pedido = { ...pedido, cliente, produtos }
 
-        pedido = { "id": pedido.id, clienteNome: cliente.nome, "data": pedido.data, valor: 10 }
-        this.setState({ pedidos: [...this.state.pedidos, pedido] });
       }
+
+      //sea info no pedido
+      // console.log(pedido)
     }))
+
+    //salva no estado
+    this.setState({ pedidos });
 
   }
 
@@ -72,6 +77,7 @@ export default class ListaPedido extends React.Component {
 
     const response = await fetch("https://sistemalift1.com/lift_ps/api/ItensPedido/" + idPedido, requestOptions);
     const pedidos = await response.json();
+    console.log(pedidos)
     return pedidos
   }
 
@@ -95,6 +101,7 @@ export default class ListaPedido extends React.Component {
   render() {
     //recupera do estado
     const { pedidos } = this.state
+    // console.log(pedidos)
     return (
 
       <div className="App" >
@@ -113,8 +120,8 @@ export default class ListaPedido extends React.Component {
                 <TableCell component="th" scope="row">
                   {pedidos.indexOf(row) + 1}
                 </TableCell>
-                <TableCell align="center">{row.clienteNome}</TableCell>
-                <TableCell align="center">{row.data}</TableCell>
+                <TableCell align="center">{row.nome}</TableCell>
+                <TableCell align="center">{row.clienteAddress}</TableCell>
                 <TableCell align="center">{row.valor}</TableCell>
               </TableRow>
             ))}
