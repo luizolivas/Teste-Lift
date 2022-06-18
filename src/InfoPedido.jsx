@@ -1,9 +1,25 @@
+import React from "react";
+
+// import "./styles.css";
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+
+import CardContent from '@mui/material/CardContent';
+
+import Typography from '@mui/material/Typography';
+
 import {
   Table, TableBody, TableCell, TableHead,
   TableRow
 } from "@material-ui/core";
-import React from "react";
-import "./styles.css";
+
+const bull = (
+  <Box
+    component="span"
+    sx={{ display: "-ms-grid", mx: '2px', transform: 'scale(0.8)' }}
+  >
+  </Box>
+);
 
 export default class InfoPedido extends React.Component {
   constructor() {
@@ -17,6 +33,8 @@ export default class InfoPedido extends React.Component {
     this.findPedido()
   }
 
+  //url = (window.location.pathname + "").replace("/pedido/", "");
+
   async findPedido() {
     var requestOptions = {
       method: "GET",
@@ -25,32 +43,36 @@ export default class InfoPedido extends React.Component {
       }
     };
 
-    const response = await fetch("https://sistemalift1.com/lift_ps/api/pedidos", requestOptions);
-    const pedidos = await response.json();
+    this.setState({ loading: true });
+    const response = await fetch("https://sistemalift1.com/lift_ps/api/pedidos/" + (window.location.pathname + "").replace("/pedido/", ""), requestOptions);
+    let pedido = await response.json();
     //percorre lista e salva novos atributos
-    await Promise.all(pedidos.map(async (pedido) => {
-      if (pedido) {
-        let itensPedido = await this.findItemPedido(pedido.id)
-        let cliente = await this.findCliente(pedido.cliente)
-        let produtos = [];
 
-        if (itensPedido.length) {
-          await Promise.all(itensPedido.map(async (item) => {
-            produtos.add(await this.findProduto(item.produto))
-          }))
+    if (pedido) {
+      let itensPedido = await this.findItemPedido(pedido.id)
+      let cliente = await this.findCliente(pedido.cliente)
+      let produtos = [];
 
-        }
-        console.log(itensPedido, cliente, produtos)
-        pedido = { ...pedido, cliente, produtos }
+      if (itensPedido.length) {
+        await Promise.all(itensPedido.map(async (item) => {
+          let produto = await this.findProduto(item.produto)
+          produto.valorCompra = item.quantidade * produto.valor
+
+          produtos.push(produto)
+        }))
 
       }
+      let sum = 0;
+      for (let i = 0; i < produtos.length; i++) {
+        sum += produtos[i].valorCompra;
+      }
 
-      //sea info no pedido
-      // console.log(pedido)
-    }))
+      pedido = { "id": pedido.id, cliente, "data": pedido.data, valor: sum }
+      this.setState({ pedido: pedido });
+    }
 
-    //salva no estado
-    this.setState({ pedidos });
+
+    this.setState({ loading: false });
 
   }
 
@@ -63,8 +85,9 @@ export default class InfoPedido extends React.Component {
     };
 
     const response = await fetch("https://sistemalift1.com/lift_ps/api/clientes/" + clienteId, requestOptions);
-    const pedidos = await response.json();
-    return pedidos
+    const clientes = await response.json();
+    console.log(clientes)
+    return clientes
   }
 
   async findItemPedido(idPedido) {
@@ -76,9 +99,8 @@ export default class InfoPedido extends React.Component {
     };
 
     const response = await fetch("https://sistemalift1.com/lift_ps/api/ItensPedido/" + idPedido, requestOptions);
-    const pedidos = await response.json();
-    console.log(pedidos)
-    return pedidos
+    const itensPedido = await response.json();
+    return itensPedido
   }
 
   async findProduto(idPedido) {
@@ -89,22 +111,47 @@ export default class InfoPedido extends React.Component {
       }
     };
 
+
     const response = await fetch("https://sistemalift1.com/lift_ps/api/Produtos/" + idPedido, requestOptions);
-    const pedidos = await response.json();
-    return pedidos
+    const produtos = await response.json();
+    return produtos
+
+
+
   }
 
-  handleRowClick() {
-    this.props.history.push("/informacaoPedido");
-  };
 
   render() {
-    //recupera do estado
-    const { pedidos } = this.state
-    // console.log(pedidos)
+    const { pedido, loading } = this.state
     return (
 
       <div className="App" >
+        <Card sx={{ minWidth: 275 }}>
+          <CardContent>
+            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            </Typography>
+            <Typography variant="h5" component="div" align="left" >
+              Dados cliente
+            </Typography>
+            <Typography sx={{ mb: 1.5 }} display={"inline"} >
+              Nome:  <label for="demo1">{pedido && pedido.cliente && pedido.cliente.nome}</label>
+              <br />
+              CPF: <label for="demo1">{pedido && pedido.cliente && pedido.cliente.cpf}</label>
+              <br />
+              Data: <label for="demo1">{pedido && pedido.data}</label>
+              <br />
+              E-mail: <label for="demo1">{pedido && pedido.cliente && pedido.cliente.email}</label>
+
+            </Typography>
+            <Typography sx={{ mb: 1.5 }} align="center" >
+
+            </Typography>
+            <Typography sx={{ mb: 1.5 }} align="right">
+
+            </Typography>
+
+          </CardContent>
+        </Card>
         <Table>
           <TableHead>
             <TableRow>
@@ -115,20 +162,18 @@ export default class InfoPedido extends React.Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {pedidos && pedidos.map((row) => (
-              <TableRow key={row.id} onClick={this.handleRowClick}>
-                <TableCell component="th" scope="row">
-                  {pedidos.indexOf(row) + 1}
-                </TableCell>
-                <TableCell align="center">{row.nome}</TableCell>
-                <TableCell align="center">{row.clienteAddress}</TableCell>
-                <TableCell align="center">{row.valor}</TableCell>
-              </TableRow>
-            ))}
+            <TableRow>
+              <TableCell align="center">{pedido && pedido.id}</TableCell>
+              <TableCell align="center"></TableCell>
+              <TableCell align="center"></TableCell>
+              <TableCell align="center"></TableCell>
+            </TableRow>
           </TableBody>
         </Table>
+
       </div>
 
     );
   }
 }
+

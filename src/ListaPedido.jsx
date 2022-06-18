@@ -2,15 +2,19 @@ import {
   Table, TableBody, TableCell, TableHead,
   TableRow
 } from "@material-ui/core";
+
 import React from "react";
 import "./styles.css";
 
-export default class ListaPedido extends React.Component {
-  constructor() {
-    super();
+
+class ListaPedido extends React.Component {
+  constructor(props) {
+    super(props);
     this.state = {
       pedidos: []
     };
+    // this.handleRowClick = this.handleRowClick.bind(this, id);
+
   }
 
   componentDidMount() {
@@ -24,7 +28,7 @@ export default class ListaPedido extends React.Component {
         "Accept": "application/json"
       }
     };
-
+    this.setState({ loading: true });
     const response = await fetch("https://sistemalift1.com/lift_ps/api/pedidos", requestOptions);
     let pedidosResponse = await response.json();
     //percorre lista e salva novos atributos
@@ -48,13 +52,12 @@ export default class ListaPedido extends React.Component {
           sum += produtos[i].valorCompra;
         }
 
-        console.log(sum);
-
         pedido = { "id": pedido.id, clienteNome: cliente.nome, "data": pedido.data, valor: sum }
         this.setState({ pedidos: [...this.state.pedidos, pedido] });
       }
     }))
 
+    this.setState({ loading: false });
 
   }
 
@@ -67,8 +70,8 @@ export default class ListaPedido extends React.Component {
     };
 
     const response = await fetch("https://sistemalift1.com/lift_ps/api/clientes/" + clienteId, requestOptions);
-    const pedidos = await response.json();
-    return pedidos
+    const clientes = await response.json();
+    return clientes
   }
 
   async findItemPedido(idPedido) {
@@ -80,8 +83,8 @@ export default class ListaPedido extends React.Component {
     };
 
     const response = await fetch("https://sistemalift1.com/lift_ps/api/ItensPedido/" + idPedido, requestOptions);
-    const pedidos = await response.json();
-    return pedidos
+    const itensPedido = await response.json();
+    return itensPedido
   }
 
   async findProduto(idPedido) {
@@ -94,19 +97,20 @@ export default class ListaPedido extends React.Component {
 
 
     const response = await fetch("https://sistemalift1.com/lift_ps/api/Produtos/" + idPedido, requestOptions);
-    const pedidos = await response.json();
-    return pedidos
+    const produtos = await response.json();
+    return produtos
   }
 
-  handleRowClick() {
-    this.props.history.push("/informacaoPedido");
+  handleRowClick(id) {
+    this.props.history.push("/pedido/" + id);
   };
 
   render() {
-    const { pedidos } = this.state
-    return (
+    const { pedidos, loading } = this.state
 
+    return (
       <div className="App" >
+
         <Table>
           <TableHead>
             <TableRow>
@@ -117,8 +121,8 @@ export default class ListaPedido extends React.Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {pedidos && pedidos.map((row) => (
-              <TableRow key={row.id} onClick={this.handleRowClick}>
+            {pedidos && !loading && pedidos.map((row) => (
+              <TableRow key={row.id} onClick={this.handleRowClick.bind(this, row.id)}>
                 <TableCell component="th" scope="row">
                   {pedidos.indexOf(row) + 1}
                 </TableCell>
@@ -131,6 +135,8 @@ export default class ListaPedido extends React.Component {
         </Table>
       </div>
 
+
     );
   }
 }
+export default ListaPedido
