@@ -123,8 +123,8 @@ export default class InfoPedido extends React.Component {
         </Typography>
         <Card sx={{ minWidth: 275 }}>
           <CardContent>
-            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            </Typography>
+            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom >
+            </Typography >
             <Typography variant="h5" component="div" align="left" >
               Dados cliente
             </Typography>
@@ -147,6 +147,9 @@ export default class InfoPedido extends React.Component {
 
           </CardContent>
         </Card>
+        <Typography variant="h5" component="div" align="left" marginTop={'50px'} >
+              Itens do Pedido
+        </Typography>
         <Table>
           <TableHead>
             <TableRow>
@@ -159,19 +162,16 @@ export default class InfoPedido extends React.Component {
           <TableBody>
             {pedido && pedido.produtos.length && !loading && pedido.produtos.map((produto) => (
               <TableRow>
-                {/* <TableCell component="th" scope="row">
-                  {pedido.produtos.indexOf(produto) + 1}
-                </TableCell> */}
                 <TableCell>{produto && produto.id}</TableCell>
                 <TableCell align="center">{produto.nome}</TableCell>
                 <TableCell align="center">{produto.quantidade}</TableCell>
-                <TableCell align="center">{produto.valor}</TableCell>
+                <TableCell align="center">R$ {produto.valor}</TableCell>
               </TableRow>
 
             ))}
           </TableBody>
         </Table>
-        <Typography variant="h6" component="div" align="right">
+        <Typography variant="h6" component="div" align="right" marginRight={'65px'}>
           Total: R$ <label for="demo1">{pedido && pedido.valor && pedido.valor}</label>
         </Typography>
       </div>

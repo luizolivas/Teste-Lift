@@ -132,7 +132,7 @@ class ListaPedido extends React.Component {
                 </TableCell>
                 <TableCell align="center">{row.clienteNome}</TableCell>
                 <TableCell align="center">{row.data}</TableCell>
-                <TableCell align="center">{row.valor}</TableCell>
+                <TableCell align="center">R$ {row.valor}</TableCell>
               </TableRow>
             ))}
           </TableBody>
