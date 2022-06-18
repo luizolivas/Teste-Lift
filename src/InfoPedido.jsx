@@ -1,7 +1,7 @@
 import React from "react";
 
 // import "./styles.css";
-import Box from '@mui/material/Box';
+
 import Card from '@mui/material/Card';
 
 import CardContent from '@mui/material/CardContent';
@@ -13,13 +13,6 @@ import {
   TableRow
 } from "@material-ui/core";
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "-ms-grid", mx: '2px', transform: 'scale(0.8)' }}
-  >
-  </Box>
-);
 
 export default class InfoPedido extends React.Component {
   constructor() {
@@ -57,7 +50,7 @@ export default class InfoPedido extends React.Component {
         await Promise.all(itensPedido.map(async (item) => {
           let produto = await this.findProduto(item.produto)
           produto.valorCompra = item.quantidade * produto.valor
-
+          produto.quantidade = item.quantidade
           produtos.push(produto)
         }))
 
@@ -67,7 +60,8 @@ export default class InfoPedido extends React.Component {
         sum += produtos[i].valorCompra;
       }
 
-      pedido = { "id": pedido.id, cliente, "data": pedido.data, valor: sum }
+      console.log(produtos)
+      pedido = { "id": pedido.id, cliente, "data": pedido.data, valor: sum, produtos }
       this.setState({ pedido: pedido });
     }
 
@@ -116,8 +110,6 @@ export default class InfoPedido extends React.Component {
     const produtos = await response.json();
     return produtos
 
-
-
   }
 
 
@@ -156,18 +148,23 @@ export default class InfoPedido extends React.Component {
           <TableHead>
             <TableRow>
               <TableCell>Pedido</TableCell>
-              <TableCell align="center">Cliente</TableCell>
-              <TableCell align="center">Data</TableCell>
+              <TableCell align="center">Produto</TableCell>
+              <TableCell align="center">Quantidade</TableCell>
               <TableCell align="center">Valor</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell align="center">{pedido && pedido.id}</TableCell>
-              <TableCell align="center"></TableCell>
-              <TableCell align="center"></TableCell>
-              <TableCell align="center"></TableCell>
-            </TableRow>
+            {pedido && pedido.produtos.length && !loading && pedido.produtos.map((produto) => (
+              <TableRow>
+                {/* <TableCell component="th" scope="row">
+                  {pedido.produtos.indexOf(produto) + 1}
+                </TableCell> */}
+                <TableCell>{produto && produto.id}</TableCell>
+                <TableCell align="center">{produto.nome}</TableCell>
+                <TableCell align="center">{produto.quantidade}</TableCell>
+                <TableCell align="center">{produto.valor}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
 

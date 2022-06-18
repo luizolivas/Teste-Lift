@@ -124,7 +124,7 @@ class ListaPedido extends React.Component {
             {pedidos && !loading && pedidos.map((row) => (
               <TableRow key={row.id} onClick={this.handleRowClick.bind(this, row.id)}>
                 <TableCell component="th" scope="row">
-                  {pedidos.indexOf(row) + 1}
+                  {row.id}
                 </TableCell>
                 <TableCell align="center">{row.clienteNome}</TableCell>
                 <TableCell align="center">{row.data}</TableCell>
