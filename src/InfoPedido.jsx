@@ -118,6 +118,9 @@ export default class InfoPedido extends React.Component {
     return (
 
       <div className="App" >
+        <Typography variant="h5" component="div" align="left" >
+          Informações do Pedido
+        </Typography>
         <Card sx={{ minWidth: 275 }}>
           <CardContent>
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
@@ -164,10 +167,13 @@ export default class InfoPedido extends React.Component {
                 <TableCell align="center">{produto.quantidade}</TableCell>
                 <TableCell align="center">{produto.valor}</TableCell>
               </TableRow>
+
             ))}
           </TableBody>
         </Table>
-
+        <Typography variant="h6" component="div" align="right">
+          Total: R$ <label for="demo1">{pedido && pedido.valor && pedido.valor}</label>
+        </Typography>
       </div>
 
     );

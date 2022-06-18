@@ -1,5 +1,5 @@
 import {
-  Table, TableBody, TableCell, TableHead,
+  Typography, Table, TableBody, TableCell, TableHead,
   TableRow
 } from "@material-ui/core";
 
@@ -31,12 +31,14 @@ class ListaPedido extends React.Component {
     this.setState({ loading: true });
     const response = await fetch("https://sistemalift1.com/lift_ps/api/pedidos", requestOptions);
     let pedidosResponse = await response.json();
-    //percorre lista e salva novos atributos
+
+
     await Promise.all(pedidosResponse.map(async (pedido) => {
       if (pedido) {
         let itensPedido = await this.findItemPedido(pedido.id)
         let cliente = await this.findCliente(pedido.cliente)
         let produtos = [];
+
 
         if (itensPedido.length) {
           await Promise.all(itensPedido.map(async (item) => {
@@ -110,7 +112,9 @@ class ListaPedido extends React.Component {
 
     return (
       <div className="App" >
-
+        <Typography variant="h5" component="div" align="center" >
+          Lista de Pedidos
+        </Typography>
         <Table>
           <TableHead>
             <TableRow>
