@@ -3,7 +3,7 @@
 Como passo inicial, é necessário clonar o repositório para os arquivos locais.
 Usando o seguinte comando:
 
-### `git clone git@gitlab.com:luizolivas/processo-lift.git`
+### `git clone https://github.com/luizolivas/Teste-Lift.git`
 
 ## Instalando Dependências do Projeto
 
